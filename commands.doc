@@ -1,0 +1,10 @@
+1. git init
+2. git add README.md
+3. git commit -m "first commit"
+4. git branch -M main
+5. git remote add origin https://github.com/kalviumcommunity/S66_weird_dreams.git
+6. git push -u origin main
+7. git checkout -b add-readme
+8. git add .
+9. git commit -m "added readme"
+10.git push origin add-readme
