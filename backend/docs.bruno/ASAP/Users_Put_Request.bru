@@ -1,0 +1,19 @@
+meta {
+  name: Users_Put_Request
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:8080/api/users/679c87990ce5153c58111b5e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username":"User14",
+    "email":"user14@gmail.com",
+    "password":"user14@pass"
+  }
+}
