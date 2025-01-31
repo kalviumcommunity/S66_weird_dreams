@@ -8,8 +8,8 @@ const connection=async()=>{
         await mongoose.connect(mongourl,{useNewUrlParser: true,useUnifiedTopology: true,})
         console.log("Connected to mongoDB atlas")
     } catch (error) {
-        console.log(err)
+        console.log(error)
     }
 }
 
-module.exports=connection
+module.exports={connection}
