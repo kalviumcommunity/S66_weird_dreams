@@ -4,11 +4,15 @@ const mongoose=require('mongoose')
 const PORT=8080
 const dotenv=require('dotenv')
 dotenv.config()
-const mongourl=process.env.mongoURL
-const connection=mongoose.connect(mongourl);
 const user=require('./model/user.model');
-
 app.use(express.json())
+const connectDB=require('./database')
+connectDB();
+
+app.get('/', async(req,res)=>{
+    const status = mongoose.connection.readyState === 1 ? "Database Connected" : "Error Conecting to database";
+    res.json({ message: "Welcome to the ASAP", database: status });
+})
 
 app.get('/ping',(req, res)=>{
     res.send('pong');
@@ -29,12 +33,5 @@ app.post('/create',async(req, res)=>{
 })
 
 app.listen(PORT,async()=>{
-    try {
-        await connection;
-        console.log("Connected to mongoDB atlas")
-    } catch (error) {
-        console.log(err)
-    }
-    
     console.log(`Server is running on http://localhost:${PORT}`);
 })
