@@ -7,6 +7,7 @@ router.get('/users',async(req, res)=>{
         const users=await User.find()
         res.status(200).json({"message":"Users retrieved successfully", users})
     } catch (error) {
+        console.log(error)
         res.status(500).json({"message":"Could not find the users", error:error.message})
     }
 })
