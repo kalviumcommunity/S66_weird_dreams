@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import background1 from '../assets/background1.png'
 // import background2 from '../assets/background2.webp'
 import secure from '../assets/secure.webp'
@@ -6,6 +7,7 @@ import tags from '../assets/tags.webp'
 import futuristic from '../assets/futuristic.webp'
 import ai from '../assets/ai.webp'
 import share from '../assets/share.webp'
+import {Link} from 'react-router-dom'
 
 const LandingPage = () => {
     return (
@@ -26,6 +28,11 @@ const LandingPage = () => {
             Dive into the surreal world of dreams. Log your strangest, most
             ethereal thoughts and explore your subconscious mind.
           </p>
+          <Link to="/dreams" className="relative z-10">
+            <button className="mt-8 px-6 py-2 mx-2 text-lg font-semibold border-2 rounded-lg">
+              Explore Dreams
+            </button>
+          </Link>
         </section>
 
         {/* Updated Feature Section with New Colors */}
