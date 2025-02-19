@@ -21,3 +21,6 @@ This project is both whimsical and practical, combining creativity with technica
 
 ### Render deployed link:
 https://s66-weird-dreams-l09n.onrender.com
+
+### CloudFlare deployment link:
+https://45362d9b.weird-dreams.pages.dev
