@@ -1,10 +1,15 @@
 
 import LandingPage from './components/LandingPage'
+import { Route, Routes } from "react-router-dom";
+import Dreams from './components/Dreams'
 function App() {
 
   return (
     <>
-      <LandingPage></LandingPage>
+      <Routes>
+        <Route path='/' element={<LandingPage/>}></Route>
+        <Route path='/dreams' element={<Dreams/>}></Route>
+      </Routes>
     </>
   )
 }
