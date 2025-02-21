@@ -1,0 +1,26 @@
+meta {
+  name: dream entry
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:8080/dream/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "userId": "6798b05ffa793a218f732d6f",
+       "title": "Running from a Shadow",
+      "description": "I was being chased by a tall, featureless shadow, but no matter how fast I ran, it stayed right behind me.",
+      "date": "2024-02-13",
+      "emotions": ["scared", "anxious"],
+      "lucid": false,
+      "nightmare": true,
+      "recurring": true,
+      "tags": ["chase", "darkness", "fear"],
+      "interpretation": "Could represent unresolved fears or anxiety."
+  }
+}

@@ -28,14 +28,13 @@ const LandingPage = () => {
             Dive into the surreal world of dreams. Log your strangest, most
             ethereal thoughts and explore your subconscious mind.
           </p>
-          <Link to="/dreams" className="relative z-10">
+          <Link to="/dreams/:userId" className="relative z-10">
             <button className="mt-8 px-6 py-2 mx-2 text-lg font-semibold border-2 rounded-lg">
               Explore Dreams
             </button>
           </Link>
         </section>
 
-        {/* Updated Feature Section with New Colors */}
         <section className="py-16 bg-gradient-to-b from-[#773092] via-[#5A59C1] to-[#5D3B88] relative">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl md:text-5xl font-semibold text-center mb-12 text-white drop-shadow-lg">

@@ -8,7 +8,7 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<LandingPage/>}></Route>
-        <Route path='/dreams' element={<Dreams/>}></Route>
+        <Route path='/dreams/:userId' element={<Dreams/>}></Route>
       </Routes>
     </>
   )
