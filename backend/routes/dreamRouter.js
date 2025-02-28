@@ -6,7 +6,7 @@ router.post('/create', async (req, res) => {
     try {
         const { userId, title, description, date, emotions, lucid, nightmare, recurring, tags } = req.body;
         const newDream = new Dream({
-            userId,
+            userId: "6798b05ffa793a218f732d6f",
             title,
             description,
             date: date || new Date(),
