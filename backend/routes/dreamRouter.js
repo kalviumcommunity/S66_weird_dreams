@@ -33,4 +33,45 @@ router.get('/get/:userId', async(req, res)=>{
     }
 })
 
+router.get('/get-dream/:dreamId', async (req, res) => {
+    try {
+        const { dreamId } = req.params;
+        if (!dreamId) {
+            return res.status(400).json({ error: "Dream ID is required" });
+        }
+        const dream = await Dream.findById(dreamId);
+        if (!dream) {
+            return res.status(404).json({ error: "Dream entry not found" });
+        }
+        res.status(200).json({ message: "Dream retrieved successfully", dream });
+    } catch (error) {
+        res.status(500).json({ error: "Error retrieving dream entry", details: error.message });
+    }
+});
+
+router.put('/update-dream/:dreamId', async(req, res)=>{
+    const {dreamId}=req.params
+    const {title, description, date, emotions, lucid, nightmare, recurring, tags }=req.body
+    const payload={title, description, date, emotions, lucid, nightmare, recurring, tags }
+    try {
+        const updated_dream=await Dream.findByIdAndUpdate(dreamId, payload, {new:true} )
+        res.status(200).json({ message: "Dream entry updated successfully!", dream: updated_dream });
+    } catch (error) {
+        res.status(500).json({ error: "Error updating dream entry", details: error.message });
+    }
+})
+
+router.delete('/delete/:dreamId', async(req, res)=>{
+    const {dreamId}=req.params
+    try {
+        const deleted_dream=await Dream.findByIdAndDelete(dreamId)
+        if (!deleted_dream) {
+            return res.status(404).json({ error: "Dream entry not found" });
+        }
+        res.status(200).json({ message: "Dream entry deleted successfully!", dream: deleted_dream});
+    } catch (error) {
+        res.status(500).json({ error: "Error deleting dream entry", details: error.message })
+    }
+})
+
 module.exports=router
