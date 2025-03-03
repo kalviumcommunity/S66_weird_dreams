@@ -1,8 +1,9 @@
 
-import LandingPage from './components/LandingPage'
+import LandingPage from './pages/LandingPage'
 import { Route, Routes } from "react-router-dom";
-import Dreams from './components/Dreams'
-import DreamForm from './components/DreamForm';
+import Dreams from './pages/Dreams'
+import AddDream from './pages/AddDream';
+import EditDream from './pages/EditDream';
 function App() {
 
   return (
@@ -10,7 +11,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />}></Route>
         <Route path="/dreams/:userId" element={<Dreams />}></Route>
-        <Route path="/add-dream" element={<DreamForm/>} />
+        <Route path="/add-dream" element={<AddDream />} />
+        <Route path="/edit-dream/:dreamId" element={<EditDream />} />
       </Routes>
     </>
   );
