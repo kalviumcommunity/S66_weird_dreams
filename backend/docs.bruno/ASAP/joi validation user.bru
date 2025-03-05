@@ -1,0 +1,19 @@
+meta {
+  name: joi validation user
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:8080/api/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "JohnDoe",
+    "email": "johndoe@example.com",
+    "password": "123"
+  }
+}

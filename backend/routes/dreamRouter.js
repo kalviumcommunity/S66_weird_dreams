@@ -1,9 +1,14 @@
 const express=require('express')
 const router=express.Router()
 const Dream=require('../model/dream.model')
+const dreamValidationSchema = require("../validation/dreamvalidation");
 
 router.post('/create', async (req, res) => {
     try {
+        const { error } = dreamValidationSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.message });
+        }
         const { userId, title, description, date, emotions, lucid, nightmare, recurring, tags } = req.body;
         const newDream = new Dream({
             userId: "6798b05ffa793a218f732d6f",

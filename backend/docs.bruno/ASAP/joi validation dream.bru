@@ -1,0 +1,25 @@
+meta {
+  name: joi validation dream
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:8080/dream/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "65b6c7dbe6823b5a1d7e4c31",
+    "title": "Flying over the ocean",
+    "description": "I was flying over a vast ocean, feeling weightless and free.",
+    "date": "2025-03-05",
+    "emotions": ["happy", "excited"],
+    "lucid": true,
+    "nightmare": false,
+    "recurring": true,
+    "tags": ["ocean", "flying", "freedom"]
+  }
+}

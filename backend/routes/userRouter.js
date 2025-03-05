@@ -1,6 +1,7 @@
 const express=require('express')
 const router=express.Router()
 const User=require('../model/user.model')
+const userValidationSchema = require("../validation/uservalidation");
 
 router.get('/users',async(req, res)=>{
     try {
@@ -12,8 +13,12 @@ router.get('/users',async(req, res)=>{
     }
 })
 
-router.post('/users', async(req, res)=>{
+router.post('/create', async(req, res)=>{
     try {
+        const { error } = userValidationSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
         const new_user=new User(req.body)
         await new_user.save()
         res.status(201).json({"message":"User created successfully", new_user})
