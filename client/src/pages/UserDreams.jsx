@@ -4,9 +4,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import DreamCard from "../components/DreamCard";
 import ModalContent from "../components/modalContent";
-import Navbar from "../components/Navbar";
 
-const Dreams = () => {
+const UserDreams = () => {
   const [dreams, setDream] = useState([]);
   const { userId } = useParams();
   const [setAnalysisResults] = useState({});
@@ -14,7 +13,7 @@ const Dreams = () => {
   const [modalContent, setModalContent] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/dream/get`)
+    fetch(`http://localhost:8080/dream/get/${userId}`)
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
@@ -65,33 +64,28 @@ const Dreams = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white">
-      <Navbar />
-      <div className="relative flex flex-col items-center justify-center p-8">
-        <div className="absolute inset-0 opacity-30 bg-[url('../assets/background1.png')] bg-cover bg-center mix-blend-overlay"></div>
-        <div className="relative z-10 max-w-2xl w-full">
-          {dreams.length > 0 ? (
-            dreams.map((dream) => (
-              <DreamCard
-                key={dream._id}
-                dream={dream}
-                analyzeDream={analyzeDream}
-                handleDelete={handleDelete}
-                loadingId={loadingId}
-                userId={userId}
-              />
-            ))
-          ) : (
-            <p className="text-lg text-gray-300">No dreams found.</p>
-          )}
-          <ModalContent
-            modalContent={modalContent}
-            setModalContent={setModalContent}
-          />
-        </div>
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white flex items-center justify-center p-8">
+      <div className="absolute inset-0 opacity-30 bg-[url('../assets/background1.png')] bg-cover bg-center mix-blend-overlay"></div>
+      <div className="relative z-10 max-w-2xl w-full">
+        {dreams.length > 0 ? (
+          dreams.map((dream) => (
+            <DreamCard
+              dream={dream}
+              analyzeDream={analyzeDream}
+              handleDelete={handleDelete}
+              loadingId={loadingId}
+            />
+          ))
+        ) : (
+          <p className="text-lg text-gray-300">No dreams found.</p>
+        )}
+        <ModalContent
+          modalContent={modalContent}
+          setModalContent={setModalContent}
+        />
       </div>
     </div>
   );
 };
 
-export default Dreams;
+export default UserDreams;
