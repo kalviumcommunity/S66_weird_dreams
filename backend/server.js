@@ -1,6 +1,7 @@
 const express=require('express')
 const userRouter = require('./routes/userRouter')
 const dreamRouter = require('./routes/dreamRouter')
+const analyzeRouter=require('./routes/analyzeRouter')
 const { connection } = require('./database')
 const cors=require('cors')
 const app=express()
@@ -11,6 +12,7 @@ app.use(express.json())
 app.use(express.static('static'))
 app.use('/api', userRouter)
 app.use('/dream', dreamRouter)
+app.use('/ai', analyzeRouter)
 
 app.get('/ping',(req, res)=>{
     res.send('pong');

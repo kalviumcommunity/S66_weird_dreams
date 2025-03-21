@@ -11,7 +11,7 @@ router.post('/create', async (req, res) => {
         }
         const { userId, title, description, date, emotions, lucid, nightmare, recurring, tags } = req.body;
         const newDream = new Dream({
-            userId: "6798b05ffa793a218f732d6f",
+            userId: "6798b08dfa793a218f732d77",
             title,
             description,
             date: date || new Date(),
@@ -28,6 +28,16 @@ router.post('/create', async (req, res) => {
     }
 });
 
+
+router.get('/get', async(req, res)=>{
+    try {
+        const dreams=await Dream.find()
+        res.status(200).json({"message":"Dreams retrieved sucessfully", dreams})
+    } catch (error) {
+        res.status(500).json({ error: "Error retrieving dream entry", details: error.message });
+    }
+})
+
 router.get('/get/:userId', async(req, res)=>{
     try {
         const {userId}=req.params
@@ -37,7 +47,6 @@ router.get('/get/:userId', async(req, res)=>{
         res.status(500).json({ error: "Error retrieving dream entry", details: error.message });
     }
 })
-
 router.get('/get-dream/:dreamId', async (req, res) => {
     try {
         const { dreamId } = req.params;
