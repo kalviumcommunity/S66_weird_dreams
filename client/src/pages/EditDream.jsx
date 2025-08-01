@@ -3,7 +3,7 @@ import EditDreamForm from "../components/EditDreamForm";
 import { useParams } from "react-router-dom";
 
 const EditDream = () => {
-  const dreamId=useParams()
+  const { dreamId } = useParams();
   const [formData, setFormData] = useState({
     userId: "6798b05ffa793a218f732d6f",
     title: "",
@@ -16,6 +16,7 @@ const EditDream = () => {
     tags: [],
     newTag: "",
   });
+
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -31,7 +32,6 @@ const EditDream = () => {
       })
       .catch((err) => console.error("Error fetching dream:", err));
   }, [dreamId]);
-
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white flex flex-col items-center justify-center p-8">
