@@ -55,7 +55,7 @@ const AddDreamForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { newTag, ...filteredData } = formData;
+      const {cd,  ...filteredData } = formData;
 
       const response = await fetch("http://localhost:8080/dream/create", {
         method: "POST",
