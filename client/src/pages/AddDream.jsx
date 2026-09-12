@@ -84,26 +84,25 @@ const AddDream = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
 
-      <div className="relative flex flex-col items-center justify-center p-8">
-        {showSuccess && (
-          <div className="fixed bottom-5 right-5 bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg animate-fade-in-out">
-            Dream operation successful!
-          </div>
-        )}
+      {showSuccess && (
+        <div className="fixed bottom-4 right-4 z-50 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
+          Dream operation successful!
+        </div>
+      )}
 
-        {error && (
-          <div className="fixed top-5 right-5 bg-red-600 text-white py-3 px-6 rounded-lg shadow-lg">
-            {error}
-          </div>
-        )}
+      {error && (
+        <div className="fixed top-20 right-4 z-50 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-lg">
+          {error}
+        </div>
+      )}
 
-        <div className="relative z-10 max-w-lg w-full bg-white/10 backdrop-blur-lg shadow-xl p-8 rounded-2xl border border-purple-400/50 mb-10">
-          <h2 className="text-3xl font-bold text-purple-300 text-center">
-            Add a Dream ✨
-          </h2>
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-10 px-4 py-10 sm:px-6">
+        <div className="w-full max-w-lg rounded-2xl border border-line bg-white p-8 shadow-sm">
+          <h2 className="mb-1 text-center text-2xl font-bold tracking-tight">Add a Dream ✨</h2>
+          <p className="mb-5 text-center text-sm text-muted">Capture it before it fades</p>
           <AddDreamForm
             formData={formData}
             setFormData={setFormData}
@@ -114,27 +113,23 @@ const AddDream = () => {
           />
         </div>
 
-        <div className="relative z-10 max-w-lg w-full">
-          <h2 className="text-2xl font-bold text-purple-300 text-center">
+        <div className="w-full">
+          <h3 className="mb-4 text-center text-xl font-bold tracking-tight">
             Your Dreams ({dreams.length})
-          </h2>
+          </h3>
           {loading ? (
-            <div className="text-center mt-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
-              <p className="text-gray-300 mt-2">Loading your dreams...</p>
+            <div className="flex items-center justify-center gap-3 text-muted">
+              <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
+              <span>Loading your dreams...</span>
             </div>
           ) : dreams.length > 0 ? (
             dreams.map((dream) => (
-              <DreamCard
-                key={dream._id}
-                dream={dream}
-                onDelete={handleDelete}
-              />
+              <DreamCard key={dream._id} dream={dream} onDelete={handleDelete} />
             ))
           ) : (
-            <p className="text-lg text-gray-300 text-center mt-4">
-              No dreams added yet. Start by adding your first dream! 🌙
-            </p>
+            <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
+              <p className="text-muted">No dreams added yet. Start with the form above. 🌙</p>
+            </div>
           )}
         </div>
       </div>

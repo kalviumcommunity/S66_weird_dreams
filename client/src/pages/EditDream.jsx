@@ -56,32 +56,26 @@ const EditDream = () => {
   }, [dreamId, token]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
-      <div className="flex flex-col items-center justify-center p-8">
-        <div className="absolute inset-0 opacity-30 bg-[url('../assets/background1.png')] bg-cover bg-center"></div>
+      <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-10 sm:px-6">
         {showSuccess && (
-          <div className="fixed top-5 right-5 bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg animate-fade-in-out z-50">
+          <div className="fixed top-20 right-4 z-50 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
             Dream updated successfully!
           </div>
         )}
         {error && (
-          <div className="relative z-10 bg-red-600 text-white py-3 px-6 rounded-lg shadow-lg mb-4">
+          <div className="mb-4 w-full rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
             {error}
           </div>
         )}
-        <div className="relative z-10 max-w-lg w-full bg-white/10 backdrop-blur-lg shadow-xl p-8 rounded-2xl border border-purple-400/50">
-          <h2 className="text-3xl font-bold text-purple-300 text-center">
-            Edit Dream
-          </h2>
+        <div className="w-full rounded-2xl border border-line bg-white p-8 shadow-sm">
+          <h2 className="mb-1 text-center text-2xl font-bold tracking-tight">Edit Dream</h2>
+          <p className="mb-5 text-center text-sm text-muted">Update the details of this dream</p>
           {loading ? (
-            <p className="text-center mt-4">Loading...</p>
+            <p className="py-8 text-center text-muted">Loading...</p>
           ) : (
-            <EditDreamForm
-              formData={formData}
-              setFormData={setFormData}
-              setShowSuccess={setShowSuccess}
-            />
+            <EditDreamForm formData={formData} setFormData={setFormData} setShowSuccess={setShowSuccess} />
           )}
         </div>
       </div>

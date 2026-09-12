@@ -7,10 +7,10 @@ const ProtectedRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading...</p>
+                    <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-accent"></div>
+                    <p className="text-muted">Loading...</p>
                 </div>
             </div>
         );

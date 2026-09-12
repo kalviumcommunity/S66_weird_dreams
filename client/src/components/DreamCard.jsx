@@ -26,77 +26,81 @@ const DreamCard = ({ dream, analyzeDream, handleDelete, onDelete, loadingId }) =
     };
 
     const author = dream?.userId?.username || dream?.username || "Anonymous dreamer";
+    const flags = [
+        dream.lucid && "Lucid",
+        dream.nightmare && "Nightmare",
+        dream.recurring && "Recurring",
+    ].filter(Boolean);
 
     return (
-      <div
-        key={dream._id}
-        className="bg-white/10 backdrop-blur-lg shadow-xl p-10 rounded-2xl border border-purple-400/50 transition-transform transform hover:scale-105 mb-6"
-      >
-        <h3 className="text-3xl font-bold text-purple-300 drop-shadow-md">
-          {dream.title}
-        </h3>
-        <p className="text-lg text-gray-300 mt-4 max-h-40 overflow-auto break-words">
+      <article className="mb-5 rounded-2xl border border-line bg-white p-6 shadow-sm transition hover:shadow-md sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-bold tracking-tight text-ink">
+              {dream.title}
+            </h3>
+            <p className="mt-1 text-sm text-muted">
+              {formatDateTime(dream.date)} · by {author}
+            </p>
+          </div>
+          {flags.length > 0 && (
+            <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+              {flags.map((f) => (
+                <span key={f} className="rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent">
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="mt-4 max-h-40 overflow-auto break-words text-[15px] leading-relaxed text-slate-700 custom-scrollbar">
           {dream.description}
         </p>
-        <div className="mt-6 space-y-4">
-          <span className="block text-md text-gray-400">
-            {formatDateTime(dream.date)}
-          </span>
-          <div>
-            <strong>💭 Emotions:</strong>{" "}
-            <span className="text-purple-300">{(dream.emotions || []).join(", ") || "—"}</span>
+
+        {(dream.emotions?.length > 0 || dream.tags?.length > 0) && (
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {(dream.emotions || []).map((e) => (
+              <span key={e} className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700">
+                {e}
+              </span>
+            ))}
+            {(dream.tags || []).map((t) => (
+              <span key={t} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                {t}
+              </span>
+            ))}
           </div>
-          <div>
-            <strong>🌙 Lucid:</strong>{" "}
-            <span className="text-green-400">{dream.lucid ? "Yes" : "No"}</span>
-          </div>
-          <div>
-            <strong>👻 Nightmare:</strong>{" "}
-            <span className="text-red-400">
-              {dream.nightmare ? "Yes" : "No"}
-            </span>
-          </div>
-          <div>
-            <strong>🔁 Recurring:</strong>{" "}
-            <span className="text-yellow-300">
-              {dream.recurring ? "Yes" : "No"}
-            </span>
-          </div>
-          <div>
-            <strong>🏷️ Tags:</strong>{" "}
-            <span className="text-blue-300">{(dream.tags || []).join(", ") || "—"}</span>
-          </div>
-          <div>
-            <strong>Created by: {author}</strong>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-2 justify-between">
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+          <button
+            onClick={() => navigate(`/edit-dream/${dream._id}`)}
+            className="rounded-lg border border-line bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-slate-300 hover:bg-slate-50"
+          >
+            Edit
+          </button>
+          {analyzeDream && (
             <button
-              onClick={() => navigate(`/edit-dream/${dream._id}`)}
-              className="bg-purple-600 px-4 py-2 rounded-lg text-white hover:bg-purple-500 transition duration-200"
+              onClick={() => analyzeDream(dream._id, dream.description)}
+              className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+              disabled={loadingId === dream._id}
             >
-              ✏️ Edit
+              {loadingId === dream._id ? "Analyzing…" : "✦ Analyze with AI"}
             </button>
-            {analyzeDream && (
-              <button
-                onClick={() => analyzeDream(dream._id, dream.description)}
-                className="bg-purple-600 px-4 py-2 rounded-lg text-white hover:bg-purple-500 transition duration-200"
-                disabled={loadingId === dream._id}
-              >
-                {loadingId === dream._id ? "Analyzing..." : "Analyze with AI"}
-              </button>
-            )}
-            {doDelete && (
-              <button
-                onClick={() => doDelete(`${dream._id}`)}
-                className="bg-red-600 px-4 py-2 rounded-lg text-white hover:bg-red-500 transition duration-200"
-              >
-                🗑️ Delete
-              </button>
-            )}
-          </div>
+          )}
+          {doDelete && (
+            <button
+              onClick={() => doDelete(`${dream._id}`)}
+              className="ml-auto rounded-lg px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+            >
+              Delete
+            </button>
+          )}
         </div>
-      </div>
+      </article>
     );
 }
 
 export default DreamCard
+

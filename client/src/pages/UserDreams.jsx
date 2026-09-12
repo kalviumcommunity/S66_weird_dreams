@@ -11,6 +11,7 @@ import { API_BASE_URL } from "../config";
 const UserDreams = () => {
   const [dreams, setDreams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { userId } = useParams();
   const { token } = useAuth();
   const [analysisResults, setAnalysisResults] = useState({});
@@ -21,12 +22,14 @@ const UserDreams = () => {
     const fetchUserDreams = async () => {
       try {
         setLoading(true);
+        setError("");
         const res = await axios.get(`${API_BASE_URL}/dream/get/${userId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         setDreams(res.data.dreams || []);
       } catch (err) {
         console.log(err);
+        setError(err.response?.data?.error || "Failed to load dreams");
         setDreams([]);
       } finally {
         setLoading(false);
@@ -73,31 +76,36 @@ const UserDreams = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
-      <div className="relative flex flex-col items-center justify-center p-8">
-        <div className="absolute inset-0 opacity-30 bg-[url('../assets/background1.png')] bg-cover bg-center mix-blend-overlay"></div>
-        <div className="relative z-10 max-w-2xl w-full">
-          {loading ? (
-            <p className="text-lg text-gray-300 text-center">Loading dreams...</p>
-          ) : dreams.length > 0 ? (
-            dreams.map((dream) => (
-              <DreamCard
-                key={dream._id}
-                dream={dream}
-                analyzeDream={analyzeDream}
-                handleDelete={handleDelete}
-                loadingId={loadingId}
-              />
-            ))
-          ) : (
-            <p className="text-lg text-gray-300 text-center">No dreams found.</p>
-          )}
-          <ModalContent
-            modalContent={modalContent}
-            setModalContent={setModalContent}
-          />
-        </div>
+      <div className="mx-auto flex max-w-2xl flex-col items-center px-4 py-10 sm:px-6">
+        <h1 className="mb-1 text-center text-3xl font-bold tracking-tight">Dream Journal</h1>
+        <p className="mb-8 text-sm text-muted">Dreams in your private journal</p>
+
+        {loading ? (
+          <div className="flex items-center gap-3 text-muted">
+            <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
+            <span>Loading dreams...</span>
+          </div>
+        ) : error ? (
+          <p className="text-center text-red-600">{error}</p>
+        ) : dreams.length > 0 ? (
+          dreams.map((dream) => (
+            <DreamCard
+              key={dream._id}
+              dream={dream}
+              analyzeDream={analyzeDream}
+              handleDelete={handleDelete}
+              loadingId={loadingId}
+            />
+          ))
+        ) : (
+          <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
+            <p className="text-muted">No dreams found.</p>
+          </div>
+        )}
+
+        <ModalContent modalContent={modalContent} setModalContent={setModalContent} />
       </div>
     </div>
   );
