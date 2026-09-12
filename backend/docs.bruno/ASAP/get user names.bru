@@ -1,11 +1,12 @@
 meta {
-  name: get user names
+  name: Health Check
   type: http
   seq: 1
 }
 
 get {
-  url: http://localhost:8080/api/names
+  url: http://localhost:8080/ping
   body: none
   auth: none
 }
+

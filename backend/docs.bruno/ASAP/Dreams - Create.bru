@@ -1,0 +1,27 @@
+meta {
+  name: Dreams - Create (Bearer token)
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/dream/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: PASTE_JWT_HERE
+}
+
+body:json {
+  {
+    "title": "Running from a Shadow",
+    "description": "I was being chased by a tall, featureless shadow, but no matter how fast I ran, it stayed right behind me.",
+    "emotions": ["scared", "anxious"],
+    "lucid": false,
+    "nightmare": true,
+    "recurring": true,
+    "tags": ["chase", "darkness", "fear"]
+  }
+}

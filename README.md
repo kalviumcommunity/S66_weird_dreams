@@ -1,26 +1,88 @@
-# Readme file for ASAP Project
-## Project Title : Weird Dreams
+# Weird Dreams 🌙 — Dream Logging + AI Interpretation
 
-### Project Overview:
-- This project allows users to log in and maintain a personal list of the strangest or most weirdest dreams they’ve experienced. Users can add a title, a description of the dream, tag it with keywords and update or delete entries. Each user's dream journal is private and editable.
+Full-stack MERN app to securely record dreams and get AI-generated interpretations + emotion summaries.
 
-### Key Features:
-- User registration and secure login with session management.
-- CRUD functionality for creating, read, update and deleting dream entries.
-- A tagging system for categorizing dreams by themes or keywords.
-- A simple and elegant UI for browsing and managing dream entries.
-- Backend APIs for managing user data and dreams.
-- Full deployment of both the frontend and backend for accessibility.
-### Tech Stack:
-- Frontend: React (with Vite)
-- Backend: Node.js with Expres-s
-- Database: MongoDB with Mongoose
-- Deployment: GitHub
-### Why This Project:
-This project is both whimsical and practical, combining creativity with technical implementation. It provides an excellent opportunity to learn user authentication, CRUD operations, database management, and API development. It’s a unique idea that encourages exploration of user-friendly design and efficient backend handling.
+**Stack:** React (Vite) + Tailwind, Node.js + Express, MongoDB (Mongoose), Gemini API, Cloudflare (frontend) + Render (backend), Bruno (API testing).
 
-### Render deployed link:
-https://s66-weird-dreams-l09n.onrender.com
+## Features (all functional)
+- 🔐 Signup / Login with JWT (bcrypt-hashed passwords), protected routes, session persistence
+- 📝 Dream CRUD (private per user): title, description, date, emotions, lucid/nightmare/recurring, tags
+- 🤖 AI dream analysis via Gemini (`POST /ai/analyze-dream`) with summary + interpretation
+- 👥 Browse dreamers + public dream feed
+- 📱 Responsive Tailwind UI (desktop + mobile)
 
-### CloudFlare deployment link:
-https://45362d9b.weird-dreams.pages.dev
+## Quick start (local)
+
+### 1. Backend
+```bash
+cd backend
+cp .env.example .env   # then fill MONGODB_URI, SECRET_KEY, GEMINI_API_KEY
+npm install
+npm run dev            # http://localhost:8080
+```
+
+### 2. Frontend
+```bash
+cd client
+cp .env.example .env   # optional: VITE_API_URL=http://localhost:8080
+npm install
+npm run dev            # http://localhost:5173
+```
+
+### 3. Test the API (curl)
+```bash
+curl http://localhost:8080/ping
+
+# signup
+curl -X POST http://localhost:8080/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo","email":"demo@test.com","password":"password123"}'
+
+# login
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@test.com","password":"password123"}'
+
+# my dreams (replace TOKEN)
+curl http://localhost:8080/dream/my-dreams -H "Authorization: Bearer TOKEN"
+
+# create dream
+curl -X POST http://localhost:8080/dream/create \
+  -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" \
+  -d '{"title":"Flying over the city","description":"I was flying over a glowing city at night and felt free and calm","emotions":["happy","calm"],"lucid":true,"tags":["flying","city"]}'
+
+# AI analysis
+curl -X POST http://localhost:8080/ai/analyze-dream \
+  -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" \
+  -d '{"dream":"I was flying over a glowing city"}'
+```
+
+Bruno collection lives in `backend/docs.bruno/` — import it into Bruno and set base URL to `http://localhost:8080` (or your Render URL).
+
+## API reference
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/ping` | — | Health check |
+| POST | `/auth/signup` | — | Register (username, email, password) → token |
+| POST | `/auth/login` | — | Login (email, password) → token |
+| GET | `/auth/me` | ✅ | Current user |
+| GET | `/dream/my-dreams` | ✅ | Private dream list |
+| POST | `/dream/create` | ✅ | Create dream |
+| GET | `/dream/get` | — | Public feed |
+| GET | `/dream/get/:userId` | — | Dreams by user |
+| GET | `/dream/get-dream/:dreamId` | — | Single dream |
+| PUT | `/dream/update-dream/:dreamId` | ✅ (owner) | Update dream |
+| DELETE | `/dream/delete/:dreamId` | ✅ (owner) | Delete dream |
+| POST | `/ai/analyze-dream` | ✅ | Gemini interpretation `{dream}` → `{analysis}` |
+
+## Deploy
+- **Backend → Render:** root `backend/`, build `npm install`, start `npm start`, env: `MONGODB_URI`, `SECRET_KEY`, `GEMINI_API_KEY`, `FRONTEND_URL`, `NODE_ENV=production`. See `backend/render.yaml`.
+- **Frontend → Cloudflare Pages:** root `client/`, build `npm run build`, output `dist`, env: `VITE_API_URL=https://<your-backend>.onrender.com`.
+- MongoDB: use Atlas (free tier) and whitelist `0.0.0.0/0` for Render.
+
+## Project structure
+```
+backend/  Express API (routes/, model/, middleware/, validation/)
+client/   React app (pages/, components/, context/AuthContext.jsx, config.js)
+```
+

@@ -1,12 +1,16 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../config";
 
-const AddDreamForm = ({
-  formData,
-  setFormData,
-  emotions,
-  fetchDreams,
-  setShowSuccess,
-}) => {
+const labelCls = "mb-1.5 block text-sm font-medium text-ink";
+const inputCls =
+  "block w-full rounded-lg border border-line bg-white px-4 py-2.5 text-ink placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:opacity-50";
+
+const AddDreamForm = ({ formData, setFormData, emotions, fetchDreams, setShowSuccess, token }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -17,10 +21,11 @@ const AddDreamForm = ({
 
   const handleEmotionChange = (e) => {
     const selected = e.target.value;
+    if (!selected) return;
     if (!formData.emotions.includes(selected)) {
       setFormData((prev) => ({
         ...prev,
-        emotions: [...prev.emotions, selected], 
+        emotions: [...prev.emotions, selected],
       }));
     }
   };
@@ -33,13 +38,11 @@ const AddDreamForm = ({
   };
 
   const addTag = () => {
-    if (
-      formData.newTag.trim() !== "" &&
-      !formData.tags.includes(formData.newTag)
-    ) {
+    const cleaned = (formData.newTag || "").trim().replace(/^@+/, "");
+    if (cleaned !== "" && !formData.tags.includes(`@${cleaned}`) && !formData.tags.includes(cleaned)) {
       setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, `@${formData.newTag.trim()}`],
+        tags: [...prev.tags, `@${cleaned}`],
         newTag: "",
       }));
     }
@@ -54,23 +57,35 @@ const AddDreamForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const {cd,  ...filteredData } = formData;
+    setSubmitError('');
 
-      const response = await fetch("http://localhost:8080/dream/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filteredData), 
+    if (!formData.title.trim() || !formData.description.trim()) {
+      setSubmitError('Title and description are required');
+      return;
+    }
+    if (formData.description.trim().length < 10) {
+      setSubmitError('Description must be at least 10 characters');
+      return;
+    }
+    if (formData.emotions.length === 0) {
+      setSubmitError('Please select at least one emotion');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { newTag, ...dreamData } = formData;
+      const response = await axios.post(`${API_BASE_URL}/dream/create`, dreamData, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
       });
 
-      const result = await response.json();
-      console.log("API Response:", result);
-
-      if (!response.ok)
-        throw new Error(result.message || "Failed to add dream");
+      console.log("API Response:", response.data);
 
       setFormData({
-        userId: formData.userId,
         title: "",
         description: "",
         emotions: [],
@@ -78,125 +93,130 @@ const AddDreamForm = ({
         lucid: false,
         nightmare: false,
         recurring: false,
-        newTag: "", 
+        newTag: "",
       });
 
-      fetchDreams();
+      await fetchDreams();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
+      setSubmitError(error.response?.data?.error || error.message || "Failed to save dream");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return (
+return (
     <div>
-      <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-        <input
-          type="text"
-          name="title"
-          placeholder="Dream Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full p-3 rounded-lg bg-gray-900 text-white border border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Describe your dream..."
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full p-3 rounded-lg bg-gray-900 text-white border border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          required
-        ></textarea>
+      {submitError && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <span className="text-sm text-red-600">{submitError}</span>
+        </div>
+      )}
 
-        <div className="flex">
-          <label className="text-purple-300">Dream Type</label>
-          <label className="flex items-center ml-2">
-            <input
-              type="checkbox"
-              name="lucid"
-              checked={formData.lucid}
-              onChange={handleChange}
-              className="form-checkbox text-purple-500"
-            />
-            <span>Lucid</span>
-          </label>
-          <label className="flex items-center ml-2">
-            <input
-              type="checkbox"
-              name="nightmare"
-              checked={formData.nightmare}
-              onChange={handleChange}
-              className="form-checkbox text-purple-500"
-            />
-            <span>Nightmare</span>
-          </label>
-          <label className="flex items-center ml-2">
-            <input
-              type="checkbox"
-              name="recurring"
-              checked={formData.recurring}
-              onChange={handleChange}
-              className="form-checkbox text-purple-500"
-            />
-            <span>Recurring</span>
-          </label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className={labelCls}>Dream Title</label>
+          <input
+            type="text"
+            name="title"
+            placeholder="Dream Title"
+            value={formData.title}
+            onChange={handleChange}
+            className={inputCls}
+            required
+            disabled={isSubmitting}
+          />
         </div>
 
         <div>
-          <label className="text-purple-300">Select Emotions</label>
-          <select
-            onChange={handleEmotionChange}
-            className="w-full mt-2 p-3 rounded-lg bg-gray-900 text-white border border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">-- Choose an Emotion --</option>
+          <label className={labelCls}>Dream Story</label>
+          <textarea
+            name="description"
+            placeholder="Describe your dream..."
+            value={formData.description}
+            onChange={handleChange}
+            className={inputCls + " h-32"}
+            required
+            disabled={isSubmitting}
+          ></textarea>
+        </div>
+
+        <div>
+          <span className="mb-2 block text-sm font-medium text-ink">Dream Type</span>
+          <div className="flex flex-wrap gap-6">
+            {["Lucid", "Nightmare", "Recurring"].map((f) => {
+              const key = f.toLowerCase();
+              return (
+                <label key={f} className="flex items-center gap-2 text-sm text-ink">
+                  <input
+                    type="checkbox"
+                    name={key}
+                    checked={formData[key]}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-line text-accent focus:ring-violet-200"
+                    disabled={isSubmitting}
+                  />
+                  {f}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <label className={labelCls}>Emotions</label>
+          <select onChange={handleEmotionChange} className={inputCls} value="" disabled={isSubmitting}>
+            <option value="">-- Choose an emotion --</option>
             {emotions.map((emotion) => (
               <option key={emotion} value={emotion}>
                 {emotion}
               </option>
             ))}
           </select>
-          <div className="flex flex-wrap mt-2 space-x-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             {formData.emotions.map((emotion) => (
               <span
                 key={emotion}
-                className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm cursor-pointer"
-                onClick={() => removeEmotion(emotion)}
+                className="cursor-pointer rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent hover:bg-violet-200"
+                onClick={() => !isSubmitting && removeEmotion(emotion)}
               >
-                {emotion} ✖
+                {emotion} ✕
               </span>
             ))}
           </div>
         </div>
 
         <div>
-          <label className="text-purple-300">Tags</label>
-          <div className="flex items-center space-x-2 mt-2">
+          <label className={labelCls}>Tags</label>
+          <div className="flex items-center gap-2">
             <input
               type="text"
               name="newTag"
               placeholder="Enter a tag"
               value={formData.newTag}
               onChange={handleChange}
-              className="flex-1 p-3 rounded-lg bg-gray-900 text-white border border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className={inputCls + " flex-1"}
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={addTag}
-              className="px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-bold transition-transform transform hover:scale-105"
+              className="rounded-lg bg-accent px-4 py-2.5 font-bold text-white hover:bg-violet-700 disabled:opacity-50"
+              disabled={isSubmitting}
             >
               +
             </button>
           </div>
-          <div className="flex flex-wrap mt-2 space-x-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             {formData.tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm cursor-pointer"
-                onClick={() => removeTag(tag)}
+                className="cursor-pointer rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-200"
+                onClick={() => !isSubmitting && removeTag(tag)}
               >
-                {tag} ✖
+                {tag} ✕
               </span>
             ))}
           </div>
@@ -204,9 +224,17 @@ const AddDreamForm = ({
 
         <button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-transform transform hover:scale-105"
+          disabled={isSubmitting}
+          className="flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 font-bold text-white hover:bg-violet-700 disabled:opacity-50"
         >
-          Save Dream
+          {isSubmitting ? (
+            <>
+              <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
+              Saving Dream...
+            </>
+          ) : (
+            'Save Dream'
+          )}
         </button>
       </form>
     </div>

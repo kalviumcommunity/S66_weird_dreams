@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import EditDreamForm from "../components/EditDreamForm";
+import Navbar from "../components/Navbar";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../config";
 
 const EditDream = () => {
   const { dreamId } = useParams();
+  const { token } = useAuth();
   const [formData, setFormData] = useState({
-    userId: "6798b05ffa793a218f732d6f",
     title: "",
     description: "",
     date: "",
@@ -18,42 +22,62 @@ const EditDream = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/dream/get/${dreamId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const dream = data.dreams.find((d) => d._id === dreamId);
+    const fetchDream = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/dream/get-dream/${dreamId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const dream = res.data.dream;
         if (dream) {
-          setFormData({ ...dream, newTag: "" });
+          setFormData({
+            title: dream.title || "",
+            description: dream.description || "",
+            date: dream.date ? new Date(dream.date).toISOString().slice(0, 10) : "",
+            emotions: dream.emotions || [],
+            lucid: !!dream.lucid,
+            nightmare: !!dream.nightmare,
+            recurring: !!dream.recurring,
+            tags: dream.tags || [],
+            newTag: "",
+          });
         }
+      } catch (err) {
+        console.error("Error fetching dream:", err);
+        setError(err.response?.data?.error || "Failed to load dream");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => console.error("Error fetching dream:", err));
-  }, [dreamId]);
+      }
+    };
+    if (dreamId) fetchDream();
+  }, [dreamId, token]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 text-white flex flex-col items-center justify-center p-8">
-      <div className="absolute inset-0 opacity-30 bg-[url('../assets/background1.png')] bg-cover bg-center"></div>
-      {showSuccess && (
-        <div className="fixed top-5 right-5 bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg animate-fade-in-out">
-          Dream updated successfully!
-        </div>
-      )}
-      <div className="relative z-10 max-w-lg w-full bg-white/10 backdrop-blur-lg shadow-xl p-8 rounded-2xl border border-purple-400/50">
-        <h2 className="text-3xl font-bold text-purple-300 text-center">
-          Edit Dream
-        </h2>
-        {loading ? (
-          <p className="text-center mt-4">Loading...</p>
-        ) : (
-          <EditDreamForm
-            formData={formData}
-            setFormData={setFormData}
-            setShowSuccess={setShowSuccess}
-          />
+    <div className="min-h-screen bg-canvas text-ink">
+      <Navbar />
+      <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-10 sm:px-6">
+        {showSuccess && (
+          <div className="fixed top-20 right-4 z-50 rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
+            Dream updated successfully!
+          </div>
         )}
+        {error && (
+          <div className="mb-4 w-full rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+        <div className="w-full rounded-2xl border border-line bg-white p-8 shadow-sm">
+          <h2 className="mb-1 text-center text-2xl font-bold tracking-tight">Edit Dream</h2>
+          <p className="mb-5 text-center text-sm text-muted">Update the details of this dream</p>
+          {loading ? (
+            <p className="py-8 text-center text-muted">Loading...</p>
+          ) : (
+            <EditDreamForm formData={formData} setFormData={setFormData} setShowSuccess={setShowSuccess} />
+          )}
+        </div>
       </div>
     </div>
   );

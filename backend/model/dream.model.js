@@ -4,15 +4,21 @@ const dreamSchema = new mongoose.Schema({
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
-        required: true 
+        required: true,
+        index: true,
     },
     title: { 
         type: String, 
-        required: true 
+        required: true,
+        trim: true,
+        minlength: 3,
+        maxlength: 100,
     },
     description: { 
         type: String, 
-        required: true 
+        required: true,
+        trim: true,
+        minlength: 10,
     },
     date: { 
         type: Date, 
@@ -34,8 +40,8 @@ const dreamSchema = new mongoose.Schema({
         type: Boolean, 
         default: false 
     },
-    tags: [{ type: String }],
-});
+    tags: [{ type: String, trim: true }],
+}, { timestamps: true });
 
 const DreamModel = mongoose.model('Dream', dreamSchema);
 
